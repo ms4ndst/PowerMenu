@@ -26,8 +26,11 @@ public partial class PopupWindow : Window
     public void SetSubtitle(string text) =>
         SubtitleText.Text = text;
 
-    private void Window_Loaded(object sender, RoutedEventArgs e) =>
-        Keyboard.Focus(this);
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Pre-select Lock so the user can Tab through or press Enter immediately
+        LockButton.Focus();
+    }
 
     private void Window_KeyDown(object sender, KeyEventArgs e)
     {

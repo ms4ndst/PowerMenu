@@ -55,6 +55,11 @@
               <Trigger Property="IsPressed" Value="True">
                 <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Surface2}"/>
               </Trigger>
+              <Trigger Property="IsFocused" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Surface1}"/>
+                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Overlay0}"/>
+                <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
+              </Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
         </Setter.Value>
@@ -66,6 +71,8 @@
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Focusable" Value="False"/>
+      <Setter Property="IsTabStop" Value="False"/>
       <Setter Property="Width" Value="36"/>
       <Setter Property="Height" Value="36"/>
       <Setter Property="Template">
@@ -148,10 +155,12 @@
         <!-- Action buttons 2×2 grid -->
         <UniformGrid Grid.Row="1"
                      Rows="2" Columns="2"
-                     Margin="18,18,18,4">
+                     Margin="18,18,18,4"
+                     KeyboardNavigation.TabNavigation="Cycle">
 
           <!-- Lock -->
-          <Button Style="{StaticResource PowerButtonStyle}"
+          <Button x:Name="LockButton"
+                  Style="{StaticResource PowerButtonStyle}"
                   Tag="&#xE72E;"
                   Content="Lock"
                   Foreground="{DynamicResource LockAccent}"
