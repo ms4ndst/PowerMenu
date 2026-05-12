@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>PowerMenu</AssemblyName>
+    <RootNamespace>PowerMenu</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Company>PowerMenu</Company>
+    <Product>PowerMenu</Product>
+    <Description>Catppuccin-themed power menu activated by a global hotkey</Description>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- Disable MSIX auto-packaging via SDK; we package manually via Build.ps1 -->
+    <WindowsPackageType>None</WindowsPackageType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Themes\Mocha.xaml" />
+    <Resource Include="Resources\Themes\Macchiato.xaml" />
+    <Resource Include="Resources\Themes\Frappe.xaml" />
+    <Resource Include="Resources\Themes\Latte.xaml" />
+  </ItemGroup>
+
+</Project>

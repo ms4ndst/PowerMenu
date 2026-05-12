@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap5 rescap">
+
+  <Identity
+    Name="PowerMenu.App"
+    Publisher="CN=PowerMenu"
+    Version="1.0.0.0"
+    ProcessorArchitecture="x64"/>
+
+  <Properties>
+    <DisplayName>PowerMenu</DisplayName>
+    <PublisherDisplayName>PowerMenu</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <Description>Catppuccin-themed power menu activated via a global keyboard shortcut</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop"
+                        MinVersion="10.0.17763.0"
+                        MaxVersionTested="10.0.26100.0"/>
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-US"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+                 Executable="PowerMenu.exe"
+                 EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="PowerMenu"
+        Description="Catppuccin power menu"
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"
+                         Square71x71Logo="Assets\SmallTile.png"
+                         Square310x310Logo="Assets\LargeTile.png"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#1e1e2e"/>
+      </uap:VisualElements>
+      <Extensions>
+        <!-- Allow the app to run at startup via the registry (set by SettingsWindow) -->
+        <uap5:Extension Category="windows.startupTask" Executable="PowerMenu.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap5:StartupTask TaskId="PowerMenuStartup" Enabled="false" DisplayName="PowerMenu"/>
+        </uap5:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust"/>
+  </Capabilities>
+
+</Package>

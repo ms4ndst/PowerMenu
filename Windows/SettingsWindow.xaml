@@ -1,0 +1,256 @@
+<Window x:Class="PowerMenu.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PowerMenu – Settings"
+        Width="520"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="True">
+
+  <Window.Resources>
+    <Style x:Key="SectionHeader" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI"/>
+      <Setter Property="Foreground" Value="{DynamicResource Subtext0}"/>
+      <Setter Property="Margin" Value="0,0,0,8"/>
+    </Style>
+
+    <Style x:Key="ModCheckBox" TargetType="CheckBox">
+      <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+      <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Margin" Value="0,0,12,0"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="ThemeButton" TargetType="Button">
+      <Setter Property="BorderThickness" Value="2"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="10"
+                    Padding="{TemplateBinding Padding}">
+              <StackPanel>
+                <WrapPanel HorizontalAlignment="Center" Margin="0,0,0,6">
+                  <!-- Swatch dots filled in code-behind -->
+                  <Rectangle x:Name="Swatch1" Width="10" Height="10" RadiusX="5" RadiusY="5" Margin="2,0"/>
+                  <Rectangle x:Name="Swatch2" Width="10" Height="10" RadiusX="5" RadiusY="5" Margin="2,0"/>
+                  <Rectangle x:Name="Swatch3" Width="10" Height="10" RadiusX="5" RadiusY="5" Margin="2,0"/>
+                  <Rectangle x:Name="Swatch4" Width="10" Height="10" RadiusX="5" RadiusY="5" Margin="2,0"/>
+                </WrapPanel>
+                <TextBlock Text="{TemplateBinding Content}"
+                           HorizontalAlignment="Center"
+                           Foreground="{TemplateBinding Foreground}"
+                           FontWeight="Medium"/>
+              </StackPanel>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bd" Property="Opacity" Value="0.85"/>
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Bd" Property="Opacity" Value="0.7"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="PrimaryButton" TargetType="Button">
+      <Setter Property="Background" Value="{DynamicResource Mauve}"/>
+      <Setter Property="Foreground" Value="{DynamicResource Base}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="20,10"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                    CornerRadius="9" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bd" Property="Opacity" Value="0.85"/>
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Bd" Property="Opacity" Value="0.7"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="SecondaryButton" TargetType="Button"
+           BasedOn="{StaticResource PrimaryButton}">
+      <Setter Property="Background" Value="{DynamicResource Surface1}"/>
+      <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+    </Style>
+
+    <Style TargetType="ComboBox">
+      <Setter Property="Background" Value="{DynamicResource Surface0}"/>
+      <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource Surface1}"/>
+      <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Padding" Value="8,6"/>
+      <Setter Property="MinWidth" Value="100"/>
+    </Style>
+  </Window.Resources>
+
+  <Border Background="{DynamicResource Base}"
+          BorderBrush="{DynamicResource Surface0}"
+          BorderThickness="1"
+          CornerRadius="16">
+    <Border.Effect>
+      <DropShadowEffect BlurRadius="40" Opacity="0.5" ShadowDepth="0"/>
+    </Border.Effect>
+
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+
+      <!-- Title bar -->
+      <Border Grid.Row="0"
+              Background="{DynamicResource Mantle}"
+              CornerRadius="16,16,0,0"
+              Padding="24,16"
+              MouseDown="TitleBar_MouseDown">
+        <Grid>
+          <TextBlock Text="Settings"
+                     FontSize="16"
+                     FontWeight="SemiBold"
+                     FontFamily="Segoe UI Variable Display, Segoe UI"
+                     Foreground="{DynamicResource Text}"/>
+          <Button HorizontalAlignment="Right"
+                  Width="28" Height="28"
+                  BorderThickness="0"
+                  Background="Transparent"
+                  Cursor="Hand"
+                  Click="CloseWindow_Click">
+            <Button.Template>
+              <ControlTemplate TargetType="Button">
+                <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="7">
+                  <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                             Text="&#xE711;" FontSize="14"
+                             Foreground="{DynamicResource Subtext0}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Surface0}"/>
+                  </Trigger>
+                </ControlTemplate.Triggers>
+              </ControlTemplate>
+            </Button.Template>
+          </Button>
+        </Grid>
+      </Border>
+
+      <!-- Content -->
+      <StackPanel Grid.Row="1" Margin="24,20,24,8">
+
+        <!-- ── Keyboard Shortcut ── -->
+        <TextBlock Style="{StaticResource SectionHeader}" Text="KEYBOARD SHORTCUT"/>
+
+        <Border Background="{DynamicResource Mantle}"
+                CornerRadius="10"
+                Padding="16"
+                Margin="0,0,0,20">
+          <StackPanel>
+            <TextBlock Text="Modifiers"
+                       FontSize="12"
+                       Foreground="{DynamicResource Subtext0}"
+                       Margin="0,0,0,8"/>
+            <WrapPanel>
+              <CheckBox x:Name="ModCtrl"  Content="Ctrl"  Style="{StaticResource ModCheckBox}"/>
+              <CheckBox x:Name="ModAlt"   Content="Alt"   Style="{StaticResource ModCheckBox}"/>
+              <CheckBox x:Name="ModShift" Content="Shift" Style="{StaticResource ModCheckBox}"/>
+              <CheckBox x:Name="ModWin"   Content="Win"   Style="{StaticResource ModCheckBox}"/>
+            </WrapPanel>
+
+            <TextBlock Text="Key"
+                       FontSize="12"
+                       Foreground="{DynamicResource Subtext0}"
+                       Margin="0,14,0,8"/>
+            <ComboBox x:Name="KeyCombo" SelectionChanged="KeyCombo_SelectionChanged"/>
+
+            <Border Background="{DynamicResource Surface0}"
+                    CornerRadius="8"
+                    Padding="10,8"
+                    Margin="0,14,0,0">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Current shortcut: "
+                           FontSize="12"
+                           Foreground="{DynamicResource Subtext0}"/>
+                <TextBlock x:Name="CurrentHotkeyLabel"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource Mauve}"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </Border>
+
+        <!-- ── Theme ── -->
+        <TextBlock Style="{StaticResource SectionHeader}" Text="THEME"/>
+
+        <UniformGrid x:Name="ThemeGrid"
+                     Columns="4"
+                     Margin="0,0,0,20"/>
+
+        <!-- ── Start with Windows ── -->
+        <TextBlock Style="{StaticResource SectionHeader}" Text="STARTUP"/>
+
+        <Border Background="{DynamicResource Mantle}"
+                CornerRadius="10"
+                Padding="16"
+                Margin="0,0,0,8">
+          <CheckBox x:Name="StartupCheck"
+                    Content="Start PowerMenu when Windows starts"
+                    FontFamily="Segoe UI Variable Text, Segoe UI"
+                    FontSize="13"
+                    Foreground="{DynamicResource Text}"/>
+        </Border>
+
+      </StackPanel>
+
+      <!-- Footer buttons -->
+      <Border Grid.Row="2"
+              Background="{DynamicResource Mantle}"
+              CornerRadius="0,0,16,16"
+              Padding="24,14">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+          <Button Style="{StaticResource SecondaryButton}"
+                  Content="Cancel"
+                  Margin="0,0,8,0"
+                  Click="Cancel_Click"/>
+          <Button Style="{StaticResource PrimaryButton}"
+                  Content="Save"
+                  Click="Save_Click"/>
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Border>
+</Window>

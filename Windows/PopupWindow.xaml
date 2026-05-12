@@ -1,0 +1,236 @@
+<Window x:Class="PowerMenu.Windows.PopupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowState="Maximized"
+        Topmost="True"
+        ShowInTaskbar="False"
+        KeyDown="Window_KeyDown"
+        MouseDown="Backdrop_MouseDown"
+        Loaded="Window_Loaded">
+
+  <Window.Resources>
+    <!-- Power action button style -->
+    <Style x:Key="PowerButtonStyle" TargetType="Button">
+      <Setter Property="Background" Value="{DynamicResource Surface0}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Focusable" Value="True"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="14"
+                    Margin="6">
+              <Border.Effect>
+                <DropShadowEffect BlurRadius="0" Opacity="0" ShadowDepth="0"
+                                  x:Name="BtnShadow"/>
+              </Border.Effect>
+              <StackPanel VerticalAlignment="Center"
+                          HorizontalAlignment="Center"
+                          Margin="0,24,0,20">
+                <TextBlock x:Name="IconGlyph"
+                           FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                           FontSize="36"
+                           Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+                           HorizontalAlignment="Center"
+                           Foreground="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}"/>
+                <TextBlock Text="{TemplateBinding Content}"
+                           HorizontalAlignment="Center"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           FontFamily="Segoe UI Variable, Segoe UI"
+                           Foreground="{DynamicResource Text}"
+                           Margin="0,10,0,0"
+                           Opacity="0.9"/>
+              </StackPanel>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Surface1}"/>
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Surface2}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <!-- Small icon-only button for settings/close -->
+    <Style x:Key="IconButtonStyle" TargetType="Button">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Width" Value="36"/>
+      <Setter Property="Height" Value="36"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                    CornerRadius="8">
+              <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                         FontSize="16"
+                         Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource Subtext0}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Surface0}"/>
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Surface1}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Window.Resources>
+
+  <!-- Full-screen backdrop; clicking it dismisses the window -->
+  <Grid Background="{DynamicResource OverlayBackdrop}" x:Name="Backdrop">
+
+    <!-- Card -->
+    <Border x:Name="Card"
+            Width="440"
+            Background="{DynamicResource Base}"
+            BorderBrush="{DynamicResource Surface0}"
+            BorderThickness="1"
+            CornerRadius="18"
+            MouseDown="Card_MouseDown"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+      <Border.Effect>
+        <DropShadowEffect BlurRadius="60" Opacity="0.6" ShadowDepth="0" Color="#000000"/>
+      </Border.Effect>
+
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource Mantle}"
+                CornerRadius="18,18,0,0"
+                Padding="28,20,20,20">
+          <Grid>
+            <StackPanel>
+              <TextBlock Text="Power Menu"
+                         FontSize="17"
+                         FontWeight="SemiBold"
+                         FontFamily="Segoe UI Variable Display, Segoe UI"
+                         Foreground="{DynamicResource Text}"/>
+              <TextBlock x:Name="SubtitleText"
+                         FontSize="12"
+                         FontFamily="Segoe UI Variable Text, Segoe UI"
+                         Foreground="{DynamicResource Subtext0}"
+                         Margin="0,3,0,0"/>
+            </StackPanel>
+            <Button Style="{StaticResource IconButtonStyle}"
+                    Tag="&#xE711;"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Click="Close_Click"
+                    ToolTip="Close (Esc)"/>
+          </Grid>
+        </Border>
+
+        <!-- Action buttons 2×2 grid -->
+        <UniformGrid Grid.Row="1"
+                     Rows="2" Columns="2"
+                     Margin="18,18,18,4">
+
+          <!-- Lock -->
+          <Button Style="{StaticResource PowerButtonStyle}"
+                  Tag="&#xE72E;"
+                  Content="Lock"
+                  Foreground="{DynamicResource LockAccent}"
+                  Click="Lock_Click"
+                  ToolTip="Lock workstation"/>
+
+          <!-- Sleep -->
+          <Button Style="{StaticResource PowerButtonStyle}"
+                  Tag="&#xE708;"
+                  Content="Sleep"
+                  Foreground="{DynamicResource SleepAccent}"
+                  Click="Sleep_Click"
+                  ToolTip="Put computer to sleep"/>
+
+          <!-- Hibernate -->
+          <Button Style="{StaticResource PowerButtonStyle}"
+                  Tag="&#xE945;"
+                  Content="Hibernate"
+                  Foreground="{DynamicResource HibernateAccent}"
+                  Click="Hibernate_Click"
+                  ToolTip="Hibernate"/>
+
+          <!-- Shutdown -->
+          <Button Style="{StaticResource PowerButtonStyle}"
+                  Tag="&#xE7E8;"
+                  Content="Shutdown"
+                  Foreground="{DynamicResource ShutdownAccent}"
+                  Click="Shutdown_Click"
+                  ToolTip="Shut down in 5 seconds"/>
+        </UniformGrid>
+
+        <!-- Footer -->
+        <Border Grid.Row="2"
+                Padding="16,8,16,16">
+          <Grid>
+            <TextBlock x:Name="HotkeyHint"
+                       FontSize="11"
+                       FontFamily="Segoe UI Variable Text, Segoe UI"
+                       Foreground="{DynamicResource Overlay0}"
+                       VerticalAlignment="Center"/>
+            <Button Style="{StaticResource IconButtonStyle}"
+                    Tag="&#xE713;"
+                    HorizontalAlignment="Right"
+                    Click="Settings_Click"
+                    ToolTip="Settings"/>
+          </Grid>
+        </Border>
+      </Grid>
+    </Border>
+
+    <!-- Fade-in animation -->
+    <Grid.Triggers>
+      <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+        <BeginStoryboard>
+          <Storyboard>
+            <DoubleAnimation Storyboard.TargetName="Card"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.15"/>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Card"
+                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+              <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0.92"/>
+              <EasingDoubleKeyFrame KeyTime="0:0:0.15" Value="1">
+                <EasingDoubleKeyFrame.EasingFunction>
+                  <CubicEase EasingMode="EaseOut"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+              </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Card"
+                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+              <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0.92"/>
+              <EasingDoubleKeyFrame KeyTime="0:0:0.15" Value="1">
+                <EasingDoubleKeyFrame.EasingFunction>
+                  <CubicEase EasingMode="EaseOut"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+              </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+          </Storyboard>
+        </BeginStoryboard>
+      </EventTrigger>
+    </Grid.Triggers>
+  </Grid>
+</Window>
