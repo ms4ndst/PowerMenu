@@ -4,6 +4,12 @@ A lightweight, Catppuccin-themed power menu for Windows. Press a global hotkey t
 
 ---
 
+## Screenshot
+
+![Screenshot](shot.png)
+
+---
+
 ## Features
 
 - **Global hotkey** — fully configurable modifier + key combination (default `Ctrl+Alt+P`)
