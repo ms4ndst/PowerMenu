@@ -10,6 +10,7 @@ using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using Colors = System.Windows.Media.Colors;
+using Windows.ApplicationModel;
 
 namespace PowerMenu.Windows;
 
@@ -118,7 +119,8 @@ public partial class SettingsWindow : Window
         var idx = Array.FindIndex(Keys, k => k.Label == keyLabel);
         KeyCombo.SelectedIndex = idx >= 0 ? idx : 0;
 
-        StartupCheck.IsChecked = _settings.StartWithWindows;
+        // Load actual system startup state (async operation)
+        LoadStartupStateAsync();
         UpdateHotkeyLabel();
 
         ModCtrl.Checked   += (_, _) => UpdateHotkeyLabel();
@@ -129,6 +131,53 @@ public partial class SettingsWindow : Window
         ModShift.Unchecked+= (_, _) => UpdateHotkeyLabel();
         ModWin.Checked    += (_, _) => UpdateHotkeyLabel();
         ModWin.Unchecked  += (_, _) => UpdateHotkeyLabel();
+    }
+
+    private async void LoadStartupStateAsync()
+    {
+        var isEnabled = await GetCurrentStartupState();
+        StartupCheck.IsChecked = isEnabled;
+        
+        // Update settings to match actual state
+        if (_settings.StartWithWindows != isEnabled)
+        {
+            _settings.StartWithWindows = isEnabled;
+            _settingsService.Save(_settings);
+        }
+    }
+
+    private static async Task<bool> GetCurrentStartupState()
+    {
+        try
+        {
+            // Check MSIX startup task first
+            if (IsPackaged())
+            {
+                var startupTask = await StartupTask.GetAsync("PowerMenuStartup");
+                return startupTask.State == StartupTaskState.Enabled;
+            }
+
+            // Check registry for unpackaged app
+            return GetRegistryStartupState();
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool GetRegistryStartupState()
+    {
+        try
+        {
+            const string RunKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+            using var key = Registry.CurrentUser.OpenSubKey(RunKey, writable: false);
+            return key?.GetValue("PowerMenu") is not null;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private void KeyCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
@@ -186,14 +235,96 @@ public partial class SettingsWindow : Window
             DragMove();
     }
 
-    private static void ApplyStartupSetting(bool enable)
+    private static async void ApplyStartupSetting(bool enable)
+    {
+        try
+        {
+            // Try MSIX startup task API first (for packaged apps)
+            if (await TrySetMsixStartup(enable))
+                return;
+
+            // Fall back to registry Run key for unpackaged apps
+            SetRegistryStartup(enable);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Failed to {(enable ? "enable" : "disable")} startup setting:\n{ex.Message}",
+                "PowerMenu",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning
+            );
+        }
+    }
+
+    private static async Task<bool> TrySetMsixStartup(bool enable)
+    {
+        try
+        {
+            // Check if running as packaged MSIX app
+            if (!IsPackaged())
+                return false;
+
+            var startupTask = await StartupTask.GetAsync("PowerMenuStartup");
+            
+            if (enable)
+            {
+                var state = await startupTask.RequestEnableAsync();
+                if (state != StartupTaskState.Enabled)
+                {
+                    System.Windows.MessageBox.Show(
+                        $"Could not enable startup. Status: {state}\n" +
+                        "You may need to allow this in Windows Settings > Apps > Startup.",
+                        "PowerMenu",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                    return false;
+                }
+            }
+            else
+            {
+                startupTask.Disable();
+            }
+            
+            return true;
+        }
+        catch
+        {
+            // If MSIX API fails, return false to try registry fallback
+            return false;
+        }
+    }
+
+    private static void SetRegistryStartup(bool enable)
     {
         const string RunKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
         using var key = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
-        if (key is null) return;
+        
+        if (key is null)
+            throw new InvalidOperationException("Cannot access Windows registry Run key.");
+
+        var exePath = Environment.ProcessPath;
+        if (string.IsNullOrEmpty(exePath))
+            throw new InvalidOperationException("Cannot determine application executable path.");
+
         if (enable)
-            key.SetValue("PowerMenu", $"\"{Environment.ProcessPath}\"");
+            key.SetValue("PowerMenu", $"\"{exePath}\"");
         else
             key.DeleteValue("PowerMenu", throwOnMissingValue: false);
+    }
+
+    private static bool IsPackaged()
+    {
+        try
+        {
+            // This will throw if not packaged
+            _ = Package.Current;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
