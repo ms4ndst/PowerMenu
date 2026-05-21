@@ -18,6 +18,15 @@ public partial class PopupWindow : Window
         // Set scale transform origin for the card animation
         Card.RenderTransformOrigin = new Point(0.5, 0.5);
         Card.RenderTransform = new ScaleTransform(1, 1);
+        
+        // Ensure focus is set when window is activated
+        Activated += Window_Activated;
+    }
+
+    private void Window_Activated(object? sender, EventArgs e)
+    {
+        // Set focus to Lock button when window becomes active
+        LockButton.Focus();
     }
 
     public void SetHotkeyHint(string hint) =>

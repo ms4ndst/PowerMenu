@@ -10,9 +10,9 @@
     <RootNamespace>PowerMenu</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>1.0.0.1</Version>
-    <FileVersion>1.0.0.1</FileVersion>
-    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <Version>1.0.0.2</Version>
+    <FileVersion>1.0.0.2</FileVersion>
+    <AssemblyVersion>1.0.0.2</AssemblyVersion>
     <Company>PowerMenu</Company>
     <Product>PowerMenu</Product>
     <Description>Catppuccin-themed power menu activated by a global hotkey</Description>

@@ -72,6 +72,7 @@ public partial class App : System.Windows.Application
         _popup.SetSubtitle("Choose a power action or press Esc to cancel.");
         _popup.Closed += (_, _) => _popup = null;
         _popup.Show();
+        _popup.Activate();
     }
 
     private void SetupTray()
